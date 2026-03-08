@@ -43,8 +43,13 @@ def serve_frontend(path):
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+YT_DLP_BASE_ARGS = [
+    "--extractor-args", "youtube:player_client=android,web",
+    "--no-warnings"
+]
+
 def run_ytdlp(args):
-    cmd = [PYTHON, "-m", "yt_dlp"] + args
+    cmd = [PYTHON, "-m", "yt_dlp"] + YT_DLP_BASE_ARGS + args
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
 
 
@@ -137,6 +142,7 @@ def download_video():
         if ext == "mp3":
             cmd = [
                 PYTHON, "-m", "yt_dlp",
+            ] + YT_DLP_BASE_ARGS + [
                 "--format", "bestaudio/best",
                 "--extract-audio", "--audio-format", "mp3", "--audio-quality", "0",
                 "--no-playlist",
@@ -146,6 +152,7 @@ def download_video():
         else:
             cmd = [
                 PYTHON, "-m", "yt_dlp",
+            ] + YT_DLP_BASE_ARGS + [
                 "--format", f"{fmt}+bestaudio/{fmt}/best[ext=mp4]/best",
                 "--merge-output-format", "mp4",
                 "--no-playlist",
