@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="YouTube video ve ses dosyalarını ücretsiz indirin. 720p, 1080p ve MP3 formatları desteklenir." />
+  <title>YT Downloader – YouTube Video İndirici</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-gradient"></div>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.84 1.56V6.8a4.85 4.85 0 01-1.07-.11z"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>YT<span>Downloader</span></h1>
+          <p>YouTube Video İndirici</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        <span>Ücretsiz & Hızlı</span>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h2 class="hero-title">YouTube Videolarını<br /><span class="gradient-text">Saniyeler İçinde İndir</span></h2>
+      <p class="hero-sub">720p, 1080p, 480p MP4 veya yalnızca ses (MP3) olarak — mobil ve PC uyumlu</p>
+
+      <!-- URL Input -->
+      <div class="search-card" id="searchCard">
+        <div class="search-input-wrapper">
+          <div class="search-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+          </div>
+          <input
+            type="url"
+            id="urlInput"
+            placeholder="YouTube URL'sini buraya yapıştır... (youtube.com/watch?v=...)"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="paste-btn" id="pasteBtn" title="Panodan yapıştır">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <button class="fetch-btn" id="fetchBtn">
+          <span class="btn-text">Video Bilgisini Getir</span>
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Error message -->
+      <div class="error-box" id="errorBox" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="errorText"></span>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-card" id="loadingCard" style="display:none;">
+      <div class="spinner-ring"></div>
+      <p>Video bilgisi alınıyor<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+    </div>
+
+    <!-- Video Result Card -->
+    <section class="result-card" id="resultCard" style="display:none;">
+      <div class="video-info">
+        <div class="thumbnail-wrapper">
+          <img id="thumbnail" src="" alt="Video Thumbnail" />
+          <div class="duration-badge" id="durationBadge"></div>
+          <div class="thumb-overlay">
+            <div class="play-icon">▶</div>
+          </div>
+        </div>
+        <div class="video-meta">
+          <h3 id="videoTitle" class="video-title"></h3>
+          <div class="meta-row">
+            <span class="meta-chip channel-chip">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              <span id="channelName"></span>
+            </span>
+            <span class="meta-chip view-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span id="viewCount"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Format Selection -->
+      <div class="format-section">
+        <h4 class="format-title">İndirme Formatı Seçin</h4>
+        <div class="format-grid" id="formatGrid"></div>
+      </div>
+
+      <!-- Download Button -->
+      <button class="download-btn" id="downloadBtn" disabled>
+        <span class="dl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </span>
+        <span class="dl-text">İndir</span>
+        <span class="dl-badge" id="dlBadge"></span>
+      </button>
+
+      <p class="disclaimer">Yalnızca telif hakkı serbest veya kendi içeriklerinizi indirin.</p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h4>Hızlı İndirme</h4>
+        <p>Sunucu taraflı işlem ile maksimum hız</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h4>Mobil Uyumlu</h4>
+        <p>Telefon ve tablet'te sorunsuz kullanım</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎵</div>
+        <h4>MP3 Çıkartma</h4>
+        <p>Videodan yalnızca sesi MP3 olarak al</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h4>Gizlilik</h4>
+        <p>Veriler kaydedilmez, yerel çalışır</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>🎬 YTDownloader — Eğitim amaçlı, kişisel kullanım için</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
