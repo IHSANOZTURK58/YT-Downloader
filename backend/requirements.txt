@@ -3,3 +3,4 @@ flask-cors>=4.0.0
 yt-dlp>=2024.1.1
 gunicorn>=21.0.0
 static-ffmpeg>=2.5
+quickjs>=1.19.0

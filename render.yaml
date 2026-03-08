@@ -2,7 +2,7 @@ services:
   - type: web
     name: yt-downloader
     runtime: python
-    buildCommand: "pip install -r backend/requirements.txt"
+    buildCommand: "curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs && pip install -r backend/requirements.txt"
     startCommand: "gunicorn backend.server:app --bind 0.0.0.0:$PORT --timeout 300 --workers 1"
     envVars:
       - key: PYTHON_VERSION
