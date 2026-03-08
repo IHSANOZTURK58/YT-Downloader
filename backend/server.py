@@ -13,14 +13,20 @@ CORS(app)
 
 # ── ffmpeg path ──────────────────────────────────────────────────────────────
 # Windows (local): bundled ffmpeg.exe next to server.py
-# Linux  (cloud) : system ffmpeg via PATH
+# Linux  (cloud) : static-ffmpeg pip package adds ffmpeg to PATH automatically
 _here = Path(__file__).parent
 _win_ffmpeg = _here / "ffmpeg.exe"
 
 if _win_ffmpeg.exists():
     FFMPEG_PATH = str(_win_ffmpeg)
 else:
-    FFMPEG_PATH = "ffmpeg"   # rely on system PATH (Linux / Render)
+    # On Render/Linux: use static-ffmpeg to get the binary path
+    try:
+        import static_ffmpeg
+        static_ffmpeg.add_paths()   # adds ffmpeg to PATH
+        FFMPEG_PATH = "ffmpeg"
+    except ImportError:
+        FFMPEG_PATH = "ffmpeg"      # fallback: rely on system PATH
 
 PYTHON = sys.executable
 
