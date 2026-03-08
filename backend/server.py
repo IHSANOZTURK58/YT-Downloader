@@ -11,22 +11,22 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# ── ffmpeg path ──────────────────────────────────────────────────────────────
-# Windows (local): bundled ffmpeg.exe next to server.py
-# Linux  (cloud) : static-ffmpeg pip package adds ffmpeg to PATH automatically
+# ── ffmpeg path (Lazy Load) ──────────────────────────────────────────────────
 _here = Path(__file__).parent
 _win_ffmpeg = _here / "ffmpeg.exe"
 
-if _win_ffmpeg.exists():
-    FFMPEG_PATH = str(_win_ffmpeg)
-else:
-    # On Render/Linux: use static-ffmpeg to get the binary path
+def get_ffmpeg_path():
+    if _win_ffmpeg.exists():
+        return str(_win_ffmpeg)
+    
+    # On Render/Linux: use static-ffmpeg, but load it lazily
+    # so it doesn't block Gunicorn's startup
     try:
         import static_ffmpeg
-        static_ffmpeg.add_paths()   # adds ffmpeg to PATH
-        FFMPEG_PATH = "ffmpeg"
+        static_ffmpeg.add_paths()
+        return "ffmpeg"
     except ImportError:
-        FFMPEG_PATH = "ffmpeg"      # fallback: rely on system PATH
+        return "ffmpeg"
 
 PYTHON = sys.executable
 
@@ -146,7 +146,7 @@ def download_video():
                 "--format", "bestaudio/best",
                 "--extract-audio", "--audio-format", "mp3", "--audio-quality", "0",
                 "--no-playlist",
-                "--ffmpeg-location", FFMPEG_PATH,
+                "--ffmpeg-location", get_ffmpeg_path(),
                 "-o", out_template, url,
             ]
         else:
@@ -156,7 +156,7 @@ def download_video():
                 "--format", f"{fmt}+bestaudio/{fmt}/best[ext=mp4]/best",
                 "--merge-output-format", "mp4",
                 "--no-playlist",
-                "--ffmpeg-location", FFMPEG_PATH,
+                "--ffmpeg-location", get_ffmpeg_path(),
                 "-o", out_template, url,
             ]
 
@@ -187,12 +187,14 @@ def download_video():
 @app.route("/api/health", methods=["GET"])
 def health():
     import shutil
-    ffmpeg_ok = bool(shutil.which("ffmpeg")) or Path(FFMPEG_PATH).exists()
+    # For health checks, we don't strictly require ffmpeg to be fully loaded,
+    # but we can return its status safely.
+    ffmpeg_ok = bool(shutil.which("ffmpeg")) or _win_ffmpeg.exists() or "static_ffmpeg" in sys.modules
     return jsonify({"status": "ok", "ffmpeg": ffmpeg_ok})
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"🎬 YT Downloader  →  http://localhost:{port}  |  ffmpeg: {FFMPEG_PATH}")
+    print(f"🎬 YT Downloader  →  http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
