@@ -44,7 +44,7 @@ def serve_frontend(path):
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 YT_DLP_BASE_ARGS = [
-    "--extractor-args", "youtube:player_client=android,web",
+    "--extractor-args", "youtube:player_client=ios,android,tv",
     "--no-warnings"
 ]
 
